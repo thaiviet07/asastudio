@@ -1,273 +1,297 @@
 "use client";
 
 import { useState } from 'react';
-import { ArrowRight, Calculator, Settings2, BarChart2 } from "lucide-react";
+import { ArrowRight, Calculator, Settings2, BarChart2, Truck, Users, LayoutDashboard, Wallet, TrendingUp, PieChart as PieChartIcon } from "lucide-react";
 import Link from "next/link";
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer,
-  PieChart, Pie, Cell
+  PieChart, Pie, Cell, AreaChart, Area
 } from 'recharts';
 
 export default function FinancialPlan() {
   const [numCafes, setNumCafes] = useState(50);
   const [commissionRateVal, setCommissionRateVal] = useState(20);
+  const [convRateVal, setConvRateVal] = useState(3);
+  const [trafficPerCafe, setTrafficPerCafe] = useState(150);
   
   // Base constants
   const costPerLamp = 300000;
+  const aov = 800000; // VND
   const lampsPerCafe = 2;
   const standeePerCafe = 2;
   const costPerStandee = 25000;
-  const trackingAppFixed = 30000000; // Zalo mini app / growstack
-  const trafficPerCafe = 150; // daily
+  
+  const setupLogisticsCostPerCafe = 150000; // Tiền xăng / giao nhận setup ban đầu
+  const monthlyMaintenanceGasPerCafe = 50000; // Tiền xăng đi lại bảo trì hàng tháng/quán
+  
   const scanRate = 0.005; // 0.5%
-  const convRate = 0.03; // 3%
-  const aov = 800000; // VND
   const daysInMonth = 30;
   const monthsInYear = 12;
 
-  // Calculations
+  // --- CAPEX Calculations ---
   const totalLamps = numCafes * lampsPerCafe;
   const totalStandees = numCafes * standeePerCafe;
   const capexLamps = totalLamps * costPerLamp;
   const capexStandees = totalStandees * costPerStandee;
-  const totalCapex = capexLamps + capexStandees + trackingAppFixed;
+  const setupLogistics = numCafes * setupLogisticsCostPerCafe;
+  const totalCapex = capexLamps + capexStandees + setupLogistics;
 
+  // --- Traffic & Revenue ---
   const totalMonthlyTraffic = numCafes * trafficPerCafe * daysInMonth;
   const monthlyScans = totalMonthlyTraffic * scanRate;
-  const monthlyOrders = monthlyScans * convRate;
+  const monthlyOrders = monthlyScans * (convRateVal / 100);
   const monthlyRevenue = monthlyOrders * aov;
   const yearlyOnlineRevenue = monthlyRevenue * monthsInYear;
+  const onlineCOGS = (monthlyOrders * monthsInYear) * costPerLamp;
 
-  // B2B Merchandise assumption: 50% cafes buy merchandise
-  const b2bClients = numCafes * 0.5;
-  const avgB2BValue = 200 * 35000; // 200 items * 35k
-  const yearlyB2BRevenue = b2bClients * avgB2BValue;
+  // --- B2B Merchandise ---
+  const b2bClients = numCafes * 0.5; // 50% quán mua sỉ
+  const b2bItemsPerClient = 200;
+  const b2bItemPrice = 35000;
+  const b2bItemCost = 15000;
+  const yearlyB2BRevenue = b2bClients * b2bItemsPerClient * b2bItemPrice;
+  const b2bCOGS = b2bClients * b2bItemsPerClient * b2bItemCost;
 
+  // --- Summary Rev & COGS ---
   const totalYearlyRev = yearlyOnlineRevenue + yearlyB2BRevenue;
-  
+  const totalCOGS = onlineCOGS + b2bCOGS;
+  const grossProfit = totalYearlyRev - totalCOGS;
+
+  // --- OPEX ---
   const affiliateCommissionRate = commissionRateVal / 100;
   const totalAffiliateExpense = yearlyOnlineRevenue * affiliateCommissionRate;
-  const maintenanceRate = 0.15;
-  const maintenanceExpense = capexLamps * maintenanceRate;
+  const maintenanceExpense = capexLamps * 0.15; // hao mòn vật lý 15%
+  const yearlyLogisticsOPEX = numCafes * monthlyMaintenanceGasPerCafe * monthsInYear;
+  const totalOpex = totalAffiliateExpense + maintenanceExpense + yearlyLogisticsOPEX;
 
-  const commissionData = [
-    { name: 'Sàn TMĐT', rate: 7.5, fill: '#cbd5e1' }, 
-    { name: 'Đại lý Offline', rate: 32.5, fill: '#94a3b8' }, 
-    { name: 'O2O Affiliate', rate: commissionRateVal, fill: '#f59e0b' }, 
-  ];
+  // --- Net ---
+  const ebitda = grossProfit - totalOpex;
+  const netCashFlowYear1 = ebitda - totalCapex;
+  const profitMargin = totalYearlyRev > 0 ? (ebitda / totalYearlyRev) * 100 : 0;
 
+  // --- Charts Data ---
   const revenueData = [
-    { name: 'Bán lẻ Affiliate O2O', value: yearlyOnlineRevenue },
+    { name: 'Affiliate O2O', value: yearlyOnlineRevenue },
     { name: 'Gia công B2B', value: yearlyB2BRevenue }
   ];
-  const COLORS = ['#f59e0b', '#1e293b'];
+  
+  const costBreakdownData = [
+    { name: 'Giá vốn (COGS)', value: totalCOGS },
+    { name: 'Hoa hồng Affiliate', value: totalAffiliateExpense },
+    { name: 'Logistic & Hao mòn', value: maintenanceExpense + yearlyLogisticsOPEX + setupLogistics },
+    { name: 'Trưng bày (CAPEX)', value: capexLamps }
+  ];
+
+  const monthlyProjectionData = Array.from({length: 12}).map((_, i) => {
+    const month = i + 1;
+    const rev = (totalYearlyRev / 12) * month;
+    const cogs = (totalCOGS / 12) * month;
+    const opex = (totalOpex / 12) * month;
+    const cashOut = totalCapex + cogs + opex;
+    const cashBalance = rev - cashOut;
+    return {
+      month: `T${month}`,
+      'Doanh thu lũy kế': rev,
+      'Chi phí lũy kế': cashOut,
+      'Dòng tiền thuần': cashBalance
+    }
+  });
+
+  const COLORS = ['#f59e0b', '#1e293b', '#94a3b8', '#cbd5e1'];
 
   const formatM = (val: number) => `${(val / 1000000).toFixed(1)}M`;
   const formatK = (val: number) => `${(val / 1000).toFixed(1)}K`;
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-5xl mx-auto pb-12">
       <div className="mb-8 flex justify-between items-end">
         <div>
-          <div className="text-xs text-yellow-400 font-bold uppercase tracking-widest mb-2">Financial Forecast</div>
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
-            Phân tích Tài chính & Định giá O2O
+          <div className="text-xs text-yellow-400 font-bold uppercase tracking-widest mb-2">Financial Insights</div>
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-900 mb-2">
+            Dynamic Financial Dashboard
           </h1>
-          <p className="text-sm text-slate-500 mt-2 max-w-2xl leading-relaxed">
-            Công cụ mô phỏng động 1 năm dựa trên quy mô mạng lưới F&B. Kéo thanh trượt để dự phóng luồng tiền, chi phí (CAPEX/OPEX) và doanh thu.
+          <p className="text-sm text-slate-500 max-w-3xl leading-relaxed">
+            Mô hình dự phóng tài chính O2O 1 năm. Điều chỉnh các thông số để xem tác động trực tiếp đến dòng tiền, lợi nhuận ròng, và tỷ suất lợi nhuận tổng thể.
           </p>
         </div>
       </div>
 
-      <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm mb-6 flex flex-col md:flex-row items-center gap-6">
-        <div className="flex-1 w-full space-y-6">
+      {/* KPI Banner */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col justify-center">
+          <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Total Revenue</div>
+          <div className="text-xl font-bold font-mono text-slate-900">{formatM(totalYearlyRev)}</div>
+        </div>
+        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col justify-center">
+          <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Total COGS</div>
+          <div className="text-xl font-bold font-mono text-slate-900">{formatM(totalCOGS)}</div>
+        </div>
+        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col justify-center">
+          <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Total OPEX</div>
+          <div className="text-xl font-bold font-mono text-slate-900">{formatM(totalOpex)}</div>
+        </div>
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-center">
+          <div className="text-[10px] text-yellow-400 uppercase tracking-widest font-bold mb-1">Net Profit (EBIT)</div>
+          <div className="text-xl font-bold font-mono text-white">{formatM(ebitda)}</div>
+        </div>
+        <div className="bg-yellow-400 border border-yellow-500 rounded-2xl p-4 flex flex-col justify-center col-span-2 md:col-span-1">
+          <div className="text-[10px] text-yellow-900 uppercase tracking-widest font-bold mb-1">Net Margin</div>
+          <div className="text-2xl font-bold font-mono text-slate-900">{profitMargin.toFixed(1)}%</div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        {/* Dynamic Controls */}
+        <div className="lg:col-span-1 border border-slate-200 rounded-3xl p-6 bg-white shadow-sm flex flex-col gap-6">
+          <h2 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 text-slate-900 pb-4 border-b border-slate-100">
+            <Settings2 className="w-4 h-4 text-yellow-500" /> System Variables
+          </h2>
+          
           <div>
-            <div className="flex justify-between items-end mb-4">
-              <h2 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 text-slate-900">
-                <Settings2 className="w-4 h-4 text-yellow-400" /> Quy mô Điểm chạm F&B
-              </h2>
-              <div className="text-2xl font-bold font-mono tracking-tight text-slate-900">{numCafes} <span className="text-[10px] text-slate-400 uppercase font-sans">Quán</span></div>
+            <div className="flex justify-between items-end mb-2">
+              <span className="text-xs font-bold text-slate-700">Quy mô Điểm F&B</span>
+              <span className="text-sm font-mono font-bold text-slate-900">{numCafes}</span>
             </div>
-            <input 
-              type="range" 
-              min="10" 
-              max="200" 
-              step="10" 
-              value={numCafes} 
-              onChange={(e) => setNumCafes(parseInt(e.target.value))}
-              className="w-full accent-yellow-400"
-            />
-            <div className="flex justify-between text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">
-              <span>10</span>
-              <span>200</span>
-            </div>
+            <input type="range" min="10" max="200" step="10" value={numCafes} onChange={(e) => setNumCafes(parseInt(e.target.value))} className="w-full accent-yellow-400" />
+            <div className="flex justify-between text-[9px] text-slate-400 mt-1 uppercase font-bold"><span>10</span><span>200</span></div>
           </div>
           
           <div>
-            <div className="flex justify-between items-end mb-4">
-              <h2 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 text-slate-900">
-                <BarChart2 className="w-4 h-4 text-yellow-400" /> Tỉ lệ Hoa hồng (Affiliate)
-              </h2>
-              <div className="text-2xl font-bold font-mono tracking-tight text-yellow-500">{commissionRateVal}%</div>
+            <div className="flex justify-between items-end mb-2">
+              <span className="text-xs font-bold text-slate-700">Tỉ lệ Affiliate</span>
+              <span className="text-sm font-mono font-bold text-yellow-600">{commissionRateVal}%</span>
             </div>
-            <input 
-              type="range" 
-              min="10" 
-              max="35" 
-              step="1" 
-              value={commissionRateVal} 
-              onChange={(e) => setCommissionRateVal(parseInt(e.target.value))}
-              className="w-full accent-yellow-500"
-            />
-            <div className="flex justify-between text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">
-              <span>10%</span>
-              <span>35%</span>
+            <input type="range" min="10" max="40" step="1" value={commissionRateVal} onChange={(e) => setCommissionRateVal(parseInt(e.target.value))} className="w-full accent-yellow-500" />
+            <div className="flex justify-between text-[9px] text-slate-400 mt-1 uppercase font-bold"><span>10%</span><span>40%</span></div>
+          </div>
+
+          <div>
+            <div className="flex justify-between items-end mb-2">
+              <span className="text-xs font-bold text-slate-700">Daily Traffic / Quán</span>
+              <span className="text-sm font-mono font-bold text-slate-900">{trafficPerCafe}</span>
+            </div>
+            <input type="range" min="50" max="500" step="10" value={trafficPerCafe} onChange={(e) => setTrafficPerCafe(parseInt(e.target.value))} className="w-full accent-yellow-400" />
+            <div className="flex justify-between text-[9px] text-slate-400 mt-1 uppercase font-bold"><span>50</span><span>500</span></div>
+          </div>
+
+          <div>
+            <div className="flex justify-between items-end mb-2">
+              <span className="text-xs font-bold text-slate-700">Conversion Rate</span>
+              <span className="text-sm font-mono font-bold text-green-600">{convRateVal}%</span>
+            </div>
+            <input type="range" min="1" max="10" step="0.5" value={convRateVal} onChange={(e) => setConvRateVal(parseFloat(e.target.value))} className="w-full accent-green-500" />
+            <div className="flex justify-between text-[9px] text-slate-400 mt-1 uppercase font-bold"><span>1%</span><span>10%</span></div>
+          </div>
+        </div>
+
+        {/* Charts Section */}
+        <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="border border-slate-200 rounded-3xl p-6 bg-white shadow-sm flex flex-col">
+            <h2 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 mb-2 text-slate-900">
+              <Wallet className="w-4 h-4 text-yellow-500" /> Doanh Thu (Revenue)
+            </h2>
+            <div className="h-48 mt-auto">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={revenueData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={2} dataKey="value" stroke="none">
+                    {revenueData.map((e, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
+                  </Pie>
+                  <RechartsTooltip formatter={(val: any) => formatM(val) + ' VND'} contentStyle={{borderRadius: '8px', fontSize: '11px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}} />
+                  <Legend verticalAlign="bottom" height={24} iconType="circle" wrapperStyle={{fontSize: '10px', color: '#64748b'}}/>
+                </PieChart>
+              </ResponsiveContainer>
             </div>
           </div>
-        </div>
-        <div className="w-full md:w-auto flex gap-4 shrink-0">
-           <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex flex-col items-center justify-center min-w-[120px]">
-             <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-1">Dự phóng Tổng Doanh thu</span>
-             <span className="text-lg font-bold font-mono text-slate-900">{formatM(totalYearlyRev)}</span>
-           </div>
-           <div className="bg-slate-900 rounded-xl p-4 flex flex-col items-center justify-center min-w-[120px]">
-             <span className="text-[10px] text-yellow-400 uppercase tracking-widest font-bold mb-1">Hoa hồng ({commissionRateVal}%)</span>
-             <span className="text-lg font-bold font-mono text-white">{formatM(totalAffiliateExpense)}</span>
-           </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm flex flex-col">
-          <h2 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 mb-4 text-slate-900">
-            <span className="w-1 h-4 bg-yellow-400"></span> So sánh Cơ cấu Hoa hồng
-          </h2>
-          <p className="text-xs text-slate-500 mb-6 leading-relaxed">
-            Mức hoa hồng O2O (17.5% - 20%) linh hoạt và hấp dẫn, không yêu cầu quán ôm hàng tồn kho, cao hơn mức TMĐT (~7.5%).
-          </p>
-          <div className="h-64 mt-auto">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={commissionData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/>
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8'}} />
-                <YAxis axisLine={false} tickLine={false} tickFormatter={(val) => `${val}%`} tick={{fontSize: 10, fill: '#94a3b8'}} />
-                <RechartsTooltip cursor={{fill: '#f8fafc'}} contentStyle={{borderRadius: '12px', border: '1px solid #f1f5f9', boxShadow: 'none', fontSize: '11px'}} />
-                <Bar dataKey="rate" radius={[4, 4, 0, 0]} barSize={40} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm flex flex-col">
-          <h2 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 mb-4 text-slate-900">
-            <span className="w-1 h-4 bg-yellow-400"></span> Cơ cấu Doanh thu 12 Tháng
-          </h2>
-          <p className="text-xs text-slate-500 mb-6 leading-relaxed">
-            Phân chia giữa nguồn thu B2C (Khách mua đèn qua link) và B2B (Quán đặt gia công phụ kiện 3D).
-          </p>
-          <div className="h-64 mt-auto">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={revenueData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={50}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                  stroke="none"
-                >
-                  {revenueData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <RechartsTooltip cursor={false} 
-                  formatter={(value: any) => formatM(value) + ' VND'}
-                  contentStyle={{borderRadius: '12px', border: '1px solid #f1f5f9', boxShadow: 'none', fontSize: '11px'}}
-                />
-                <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{fontSize: '11px', color: '#64748b'}}/>
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-slate-900 text-white rounded-2xl p-6 mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           
-          <div className="col-span-1 border-b md:border-b-0 md:border-r border-slate-800 pb-6 md:pb-0 md:pr-6">
-            <h3 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 mb-6 text-yellow-400">
-              <Calculator className="w-3.5 h-3.5"/> CAPEX (Đầu tư setup)
+          <div className="border border-slate-200 rounded-3xl p-6 bg-white shadow-sm flex flex-col">
+            <h2 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 mb-2 text-slate-900">
+              <PieChartIcon className="w-4 h-4 text-slate-500" /> Cấu Trúc Chi Phí (Costs)
+            </h2>
+            <div className="h-48 mt-auto">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={costBreakdownData} cx="50%" cy="50%" outerRadius={70} paddingAngle={2} dataKey="value" stroke="none">
+                    {costBreakdownData.map((e, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
+                  </Pie>
+                  <RechartsTooltip formatter={(val: any) => formatM(val) + ' VND'} contentStyle={{borderRadius: '8px', fontSize: '11px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}} />
+                  <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{fontSize: '10px', color: '#64748b'}}/>
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="col-span-1 sm:col-span-2 border border-slate-200 rounded-3xl p-6 bg-white shadow-sm flex flex-col">
+            <h2 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 mb-6 text-slate-900">
+              <TrendingUp className="w-4 h-4 text-green-500" /> Dòng Tiền Lũy Kế 12 Tháng
+            </h2>
+            <div className="h-56 mt-auto">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={monthlyProjectionData} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/>
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8'}} />
+                  <YAxis tickFormatter={(val) => formatM(val)} axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8'}} />
+                  <RechartsTooltip formatter={(val: any) => formatM(val) + ' VND'} contentStyle={{borderRadius: '8px', fontSize: '11px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}} />
+                  <Area type="monotone" dataKey="Doanh thu lũy kế" stroke="#10b981" fillOpacity={0.1} fill="#10b981" strokeWidth={2} />
+                  <Area type="monotone" dataKey="Chi phí lũy kế" stroke="#ef4444" fillOpacity={0.1} fill="#ef4444" strokeWidth={2} />
+                  <Legend verticalAlign="bottom" height={20} iconType="plainline" wrapperStyle={{fontSize: '11px', color: '#64748b', marginTop: '10px'}}/>
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Demographics & Logistics Breakdown */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+         <div className="bg-slate-900 text-white rounded-3xl p-8 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-yellow-500 rounded-full blur-[80px] opacity-20"></div>
+            <div className="relative z-10">
+               <h3 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 mb-6 text-yellow-400">
+                 <Users className="w-3.5 h-3.5"/> Demographics & Target Audience
+               </h3>
+               <div className="space-y-4 text-xs font-medium">
+                 <div className="flex justify-between border-b border-slate-800 pb-3">
+                   <span className="text-slate-400">Độ tuổi (Age)</span>
+                   <span className="text-white">Gen Y & Z (18-35 tuổi)</span>
+                 </div>
+                 <div className="flex justify-between border-b border-slate-800 pb-3">
+                   <span className="text-slate-400">Thu nhập (Income)</span>
+                   <span className="text-white">Trung bình - Cao (15M+ VND/Tháng)</span>
+                 </div>
+                 <div className="flex justify-between border-b border-slate-800 pb-3">
+                   <span className="text-slate-400">Phong cách sống</span>
+                   <span className="text-white">Thích trải nghiệm nghệ thuật, Check-in</span>
+                 </div>
+                 <div className="flex justify-between">
+                   <span className="text-slate-400">Dwell Time (Cafe)</span>
+                   <span className="text-white">2 - 3 Giờ / Lượt</span>
+                 </div>
+               </div>
+            </div>
+         </div>
+
+         <div className="bg-slate-50 border border-slate-200 rounded-3xl p-8">
+            <h3 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 mb-6 text-slate-800">
+               <Truck className="w-3.5 h-3.5 text-slate-600"/> Tối ưu hóa Logictics & Hạ Tầng
             </h3>
             <div className="space-y-4 text-xs font-medium">
-              <div className="flex justify-between text-slate-400">
-                <span>{totalLamps} Sản phẩm Đèn</span>
-                <span className="font-mono text-white">{formatM(capexLamps)}</span>
-              </div>
-              <div className="flex justify-between text-slate-400">
-                <span>{totalStandees} Standee Mica</span>
-                <span className="font-mono text-white">{formatM(capexStandees)}</span>
-              </div>
-              <div className="flex justify-between text-slate-400">
-                <span>Tracking App (1 năm)</span>
-                <span className="font-mono text-white">{formatM(trackingAppFixed)}</span>
-              </div>
-              <div className="flex justify-between pt-4 border-t border-slate-800">
-                <span className="font-bold uppercase tracking-widest text-slate-300">Tổng</span>
-                <span className="font-mono font-bold text-yellow-400">{formatM(totalCapex)}</span>
-              </div>
+               <div className="flex justify-between border-b border-slate-200 pb-3">
+                 <span className="text-slate-500">Chi phí xăng/vận chuyển setup</span>
+                 <span className="text-slate-900 font-mono">{formatM(setupLogisticsCostPerCafe)} / quán</span>
+               </div>
+               <div className="flex justify-between border-b border-slate-200 pb-3">
+                 <span className="text-slate-500">Chi phí đi lại bảo trì (hàng tháng)</span>
+                 <span className="text-slate-900 font-mono">{formatK(monthlyMaintenanceGasPerCafe)} / quán / tháng</span>
+               </div>
+               <div className="flex justify-between border-b border-slate-200 pb-3">
+                 <span className="text-slate-500">Tổng chi phí Logistic năm 1</span>
+                 <span className="text-slate-900 font-mono font-bold">{formatM(setupLogistics + yearlyLogisticsOPEX)}</span>
+               </div>
+               <p className="text-[10px] text-slate-500 leading-relaxed font-bold uppercase tracking-widest pt-2">
+                 *Đã loại trừ biến phí phần mềm. Tập trung duy nhất vào dòng vốn phần cứng và luân chuyển hàng hóa thực tế.
+               </p>
             </div>
-            <p className="mt-6 text-[10px] text-slate-500 leading-relaxed font-bold uppercase tracking-widest">
-              = Tương đương NSQC thấp so với {numCafes} điểm vật lý.
-            </p>
-          </div>
-
-          <div className="col-span-1 md:col-span-2">
-            <h3 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 mb-6 text-yellow-400">
-              <BarChart2 className="w-3.5 h-3.5 text-yellow-400"/> Biến phí & Lợi nhuận (Theo năm)
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="flex flex-col gap-4 font-medium">
-                <h4 className="text-[10px] uppercase tracking-widest text-slate-500 font-bold border-b border-slate-800 pb-2">Metrics Traffic Tích lũy</h4>
-                <div className="flex justify-between text-xs">
-                  <span className="text-slate-400">Lượt khách ghé quán</span>
-                  <span className="font-mono text-white">{formatK(totalMonthlyTraffic * 12)}L</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-slate-400">Lượt quét QR (Scan)</span>
-                  <span className="font-mono text-white">{(monthlyScans * 12).toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-slate-400">Số đơn chuyển đổi</span>
-                  <span className="font-mono text-white">{(monthlyOrders * 12).toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-slate-400">AOV (Trung bình đơn)</span>
-                  <span className="font-mono text-white">{formatM(aov)}</span>
-                </div>
-              </div>
-              <div className="flex flex-col gap-4 font-medium">
-                <h4 className="text-[10px] uppercase tracking-widest text-slate-500 font-bold border-b border-slate-800 pb-2">Biến phí (Variable OPEX)</h4>
-                <div className="flex justify-between text-xs">
-                  <span className="text-slate-400">Tổng chi Hoa hồng ({commissionRateVal}%)</span>
-                  <span className="font-mono text-white">{formatM(totalAffiliateExpense)}</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-slate-400">Hao mòn & Bảo trì (15%)</span>
-                  <span className="font-mono text-white">{formatM(maintenanceExpense)}</span>
-                </div>
-                <div className="flex justify-between text-xs mt-3 bg-slate-800/50 p-2 rounded-lg">
-                  <span className="text-slate-300 font-bold uppercase tracking-tight">Doanh thu Thuần (EST)</span>
-                  <span className="font-mono font-bold text-green-400">
-                    {formatM(totalYearlyRev - totalAffiliateExpense - maintenanceExpense)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
+         </div>
       </div>
 
       <div className="flex justify-between items-center">
@@ -287,3 +311,4 @@ export default function FinancialPlan() {
     </div>
   );
 }
+
