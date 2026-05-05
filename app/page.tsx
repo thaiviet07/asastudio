@@ -31,7 +31,7 @@ export default function Home() {
         </div>
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
            <div className="text-[10px] font-bold text-yellow-400 uppercase tracking-widest mb-1">Est. Yearly Rev</div>
-           <div className="text-2xl font-bold font-mono tracking-tight text-white">~1.16B</div>
+           <div className="text-2xl font-bold font-mono tracking-tight text-white">~500M</div>
         </div>
       </div>
 
@@ -72,41 +72,6 @@ export default function Home() {
           <div className="mt-6 flex items-center justify-between border-t border-slate-800 pt-4">
             <div className="text-4xl font-light">15-20%</div>
             <div className="text-[10px] text-slate-500 bg-slate-800 px-2 py-1 rounded uppercase tracking-widest font-bold">Affiliate Commission</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm mb-8">
-        <h3 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 mb-6 text-slate-900">
-          <span className="w-1 h-4 bg-yellow-400"></span> Nền tảng Di sản Kiến trúc & ASA Studio
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="flex flex-col">
-            <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-3">
-              <span className="text-[10px] font-bold text-slate-400">01</span>
-            </div>
-            <h4 className="font-bold text-xs mb-2 text-slate-900 uppercase tracking-widest">Tri thức Hàn lâm</h4>
-            <p className="text-slate-500 text-xs leading-relaxed">
-              Dẫn dắt bởi Giám đốc Thiết kế, TS. Thanh – có kinh nghiệm thiết kế tại London. ASA sở hữu nền tảng tri thức sâu sắc về nghệ thuật sử dụng ánh sáng trong kiến trúc.
-            </p>
-          </div>
-          <div className="flex flex-col">
-            <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-3">
-              <span className="text-[10px] font-bold text-slate-400">02</span>
-            </div>
-            <h4 className="font-bold text-xs mb-2 text-slate-900 uppercase tracking-widest">Giao thoa Văn hóa</h4>
-            <p className="text-slate-500 text-xs leading-relaxed">
-              Định vị thương hiệu giữa giá trị truyền thống và ngôn ngữ thiết kế đương đại. Điển hình là dòng đèn NOLA cảm hứng từ nón lá, sản xuất qua công nghệ in 3D tiên tiến.
-            </p>
-          </div>
-          <div className="flex flex-col">
-            <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center mb-3">
-              <span className="text-[10px] font-bold text-slate-400">03</span>
-            </div>
-            <h4 className="font-bold text-xs mb-2 text-slate-900 uppercase tracking-widest">Tệp Khách hàng</h4>
-            <p className="text-slate-500 text-xs leading-relaxed">
-              Thu hút giới doanh nhân, người có gu thẩm mỹ cao, những cá nhân trân trọng "lớp đệm sáng" có khả năng kiến tạo cảm xúc cho không gian sống thay vì chỉ là công cụ phát sáng đại trà.
-            </p>
           </div>
         </div>
       </div>

@@ -13,7 +13,7 @@ export default function FinancialPlan() {
   const [commissionRateVal, setCommissionRateVal] = useState(20);
   
   // Base constants
-  const costPerLamp = 1500000;
+  const costPerLamp = 300000;
   const lampsPerCafe = 2;
   const standeePerCafe = 2;
   const costPerStandee = 25000;
@@ -21,7 +21,7 @@ export default function FinancialPlan() {
   const trafficPerCafe = 150; // daily
   const scanRate = 0.005; // 0.5%
   const convRate = 0.03; // 3%
-  const aov = 2500000; // VND
+  const aov = 800000; // VND
   const daysInMonth = 30;
   const monthsInYear = 12;
 

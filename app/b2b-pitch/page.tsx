@@ -78,7 +78,7 @@ export default function B2BPitch() {
               </div>
               <div>
                 <h4 className="font-bold text-sm text-yellow-800 mb-1">Chiết Khấu (Affiliate 15-20%)</h4>
-                <p className="text-xs text-yellow-700/80 leading-relaxed">Với đơn hàng trung bình 2.500.000đ, quán nhận ngay ~500.000đ/đơn thưởng mà không cần nhập hàng hay lưu kho.</p>
+                <p className="text-xs text-yellow-700/80 leading-relaxed">Với đơn hàng trung bình 800.000đ, quán nhận ngay ~160.000đ/đơn thưởng mà không cần nhập hàng hay lưu kho.</p>
               </div>
             </div>
           </div>
