@@ -10,7 +10,9 @@ import {
   LineChart, 
   Calendar,
   ShieldAlert,
-  Handshake
+  Handshake,
+  ClipboardCheck,
+  Cpu
 } from 'lucide-react';
 
 const navItems = [
@@ -21,6 +23,8 @@ const navItems = [
   { name: 'Execution Master Plan', href: '/execution-plan', icon: Calendar },
   { name: 'Case Studies & Risk', href: '/case-studies', icon: ShieldAlert },
   { name: 'B2B Partner Pitch', href: '/b2b-pitch', icon: Handshake },
+  { name: 'Partner Onboarding', href: '/onboarding', icon: ClipboardCheck },
+  { name: 'Tracking & Analytics', href: '/tech-analytics', icon: Cpu },
 ];
 
 export function Sidebar() {

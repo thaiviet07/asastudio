@@ -122,10 +122,10 @@ export default function B2BPitch() {
           ← Case Studies
         </Link>
         <Link 
-          href="/" 
+          href="/onboarding" 
           className="inline-flex items-center gap-2 bg-yellow-400 text-slate-900 px-5 py-2.5 text-xs font-bold rounded-lg hover:bg-yellow-500 transition-colors uppercase tracking-tight"
         >
-          Back to Top <ArrowRight className="w-3.5 h-3.5" />
+          Tiếp tục: Onboarding <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>
     </div>

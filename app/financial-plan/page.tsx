@@ -10,6 +10,7 @@ import {
 
 export default function FinancialPlan() {
   const [numCafes, setNumCafes] = useState(50);
+  const [commissionRateVal, setCommissionRateVal] = useState(20);
   
   // Base constants
   const costPerLamp = 1500000;
@@ -44,7 +45,7 @@ export default function FinancialPlan() {
 
   const totalYearlyRev = yearlyOnlineRevenue + yearlyB2BRevenue;
   
-  const affiliateCommissionRate = 0.20;
+  const affiliateCommissionRate = commissionRateVal / 100;
   const totalAffiliateExpense = yearlyOnlineRevenue * affiliateCommissionRate;
   const maintenanceRate = 0.15;
   const maintenanceExpense = capexLamps * maintenanceRate;
@@ -52,7 +53,7 @@ export default function FinancialPlan() {
   const commissionData = [
     { name: 'Sàn TMĐT', rate: 7.5, fill: '#cbd5e1' }, 
     { name: 'Đại lý Offline', rate: 32.5, fill: '#94a3b8' }, 
-    { name: 'O2O Affiliate', rate: 17.5, fill: '#f59e0b' }, 
+    { name: 'O2O Affiliate', rate: commissionRateVal, fill: '#f59e0b' }, 
   ];
 
   const revenueData = [
@@ -79,25 +80,49 @@ export default function FinancialPlan() {
       </div>
 
       <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm mb-6 flex flex-col md:flex-row items-center gap-6">
-        <div className="flex-1 w-full">
-          <div className="flex justify-between items-end mb-4">
-            <h2 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 text-slate-900">
-              <Settings2 className="w-4 h-4 text-yellow-400" /> Quy mô Điểm chạm F&B
-            </h2>
-            <div className="text-2xl font-bold font-mono tracking-tight text-slate-900">{numCafes} <span className="text-[10px] text-slate-400 uppercase font-sans">Quán</span></div>
+        <div className="flex-1 w-full space-y-6">
+          <div>
+            <div className="flex justify-between items-end mb-4">
+              <h2 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 text-slate-900">
+                <Settings2 className="w-4 h-4 text-yellow-400" /> Quy mô Điểm chạm F&B
+              </h2>
+              <div className="text-2xl font-bold font-mono tracking-tight text-slate-900">{numCafes} <span className="text-[10px] text-slate-400 uppercase font-sans">Quán</span></div>
+            </div>
+            <input 
+              type="range" 
+              min="10" 
+              max="200" 
+              step="10" 
+              value={numCafes} 
+              onChange={(e) => setNumCafes(parseInt(e.target.value))}
+              className="w-full accent-yellow-400"
+            />
+            <div className="flex justify-between text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">
+              <span>10</span>
+              <span>200</span>
+            </div>
           </div>
-          <input 
-            type="range" 
-            min="10" 
-            max="200" 
-            step="10" 
-            value={numCafes} 
-            onChange={(e) => setNumCafes(parseInt(e.target.value))}
-            className="w-full accent-yellow-400"
-          />
-          <div className="flex justify-between text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">
-            <span>10</span>
-            <span>200</span>
+          
+          <div>
+            <div className="flex justify-between items-end mb-4">
+              <h2 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 text-slate-900">
+                <BarChart2 className="w-4 h-4 text-yellow-400" /> Tỉ lệ Hoa hồng (Affiliate)
+              </h2>
+              <div className="text-2xl font-bold font-mono tracking-tight text-yellow-500">{commissionRateVal}%</div>
+            </div>
+            <input 
+              type="range" 
+              min="10" 
+              max="35" 
+              step="1" 
+              value={commissionRateVal} 
+              onChange={(e) => setCommissionRateVal(parseInt(e.target.value))}
+              className="w-full accent-yellow-500"
+            />
+            <div className="flex justify-between text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">
+              <span>10%</span>
+              <span>35%</span>
+            </div>
           </div>
         </div>
         <div className="w-full md:w-auto flex gap-4 shrink-0">
@@ -106,7 +131,7 @@ export default function FinancialPlan() {
              <span className="text-lg font-bold font-mono text-slate-900">{formatM(totalYearlyRev)}</span>
            </div>
            <div className="bg-slate-900 rounded-xl p-4 flex flex-col items-center justify-center min-w-[120px]">
-             <span className="text-[10px] text-yellow-400 uppercase tracking-widest font-bold mb-1">Hoa hồng (20%)</span>
+             <span className="text-[10px] text-yellow-400 uppercase tracking-widest font-bold mb-1">Hoa hồng ({commissionRateVal}%)</span>
              <span className="text-lg font-bold font-mono text-white">{formatM(totalAffiliateExpense)}</span>
            </div>
         </div>
@@ -225,7 +250,7 @@ export default function FinancialPlan() {
               <div className="flex flex-col gap-4 font-medium">
                 <h4 className="text-[10px] uppercase tracking-widest text-slate-500 font-bold border-b border-slate-800 pb-2">Biến phí (Variable OPEX)</h4>
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-400">Tổng chi Hoa hồng (20%)</span>
+                  <span className="text-slate-400">Tổng chi Hoa hồng ({commissionRateVal}%)</span>
                   <span className="font-mono text-white">{formatM(totalAffiliateExpense)}</span>
                 </div>
                 <div className="flex justify-between text-xs">
