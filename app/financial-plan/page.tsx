@@ -21,52 +21,51 @@ const COLORS = ['#f59e0b', '#1e293b'];
 
 export default function FinancialPlan() {
   return (
-    <div className="max-w-5xl mx-auto px-12 py-16">
-      <div className="mb-4 inline-block px-3 py-1 bg-yellow-100 text-yellow-800 text-sm font-semibold rounded-full tracking-wide">
-        Financial Plan
+    <div className="max-w-5xl mx-auto">
+      <div className="mb-8">
+        <div className="text-xs text-yellow-400 font-bold uppercase tracking-widest mb-2">Financial Plan</div>
+        <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
+          Phân tích Tài chính O2O (1 Năm)
+        </h1>
+        <p className="text-sm text-slate-500 mt-2 max-w-3xl leading-relaxed">Mô phỏng quy mô trung bình: <strong>50 Không gian F&B</strong> Đối tác tại TP.HCM.</p>
       </div>
-      <h1 className="text-4xl font-extrabold tracking-tight mb-6">Phân tích Tài chính O2O (1 Năm)</h1>
-      <p className="text-slate-500 mb-10 text-lg">Mô phỏng quy mô trung bình: <strong>50 Không gian F&B</strong> Đối tác tại TP.HCM.</p>
-      <div className="w-16 h-1 bg-yellow-400 mb-12"></div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
-        <div>
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-            <div className="w-2 h-6 bg-yellow-400 rounded-sm"></div>
-            So sánh Cơ cấu Hoa hồng
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm flex flex-col">
+          <h2 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 mb-4 text-slate-900">
+            <span className="w-1 h-4 bg-yellow-400"></span> So sánh Cơ cấu Hoa hồng
           </h2>
-          <p className="text-slate-600 mb-6 text-sm">
-            Mức hoa hồng 15-20% cực kỳ cạnh tranh cho quán cafe mà không phát sinh rủi ro tồn kho, so với chiết khấu đại lý. Nguồn quỹ lấy từ việc tiết kiệm quảng cáo số (CPA).
+          <p className="text-xs text-slate-500 mb-6 leading-relaxed">
+            Mức hoa hồng 15-20% cực kỳ cạnh tranh cho quán cafe mà không phát sinh rủi ro tồn kho, so với chiết khấu đại lý. Nguồn quỹ lấy từ việc tiết kiệm quảng cáo.
           </p>
-          <div className="h-64 border border-slate-100 rounded-xl p-4 bg-slate-50">
+          <div className="h-64 mt-auto">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={commissionData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0"/>
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#64748b'}} />
-                <YAxis axisLine={false} tickLine={false} tickFormatter={(val) => `${val}%`} tick={{fontSize: 12, fill: '#64748b'}} />
-                <RechartsTooltip cursor={{fill: '#f1f5f9'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
-                <Bar dataKey="rate" radius={[4, 4, 0, 0]} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9"/>
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8'}} />
+                <YAxis axisLine={false} tickLine={false} tickFormatter={(val) => `${val}%`} tick={{fontSize: 10, fill: '#94a3b8'}} />
+                <RechartsTooltip cursor={{fill: '#f8fafc'}} contentStyle={{borderRadius: '12px', border: '1px solid #f1f5f9', boxShadow: 'none', fontSize: '11px'}} />
+                <Bar dataKey="rate" radius={[4, 4, 0, 0]} barSize={40} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div>
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-            <div className="w-2 h-6 bg-yellow-400 rounded-sm"></div>
-            Dòng Doanh thu Ước tính
+        <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm flex flex-col">
+          <h2 className="text-sm font-bold uppercase tracking-tight flex items-center gap-2 mb-4 text-slate-900">
+            <span className="w-1 h-4 bg-yellow-400"></span> Dòng Doanh thu Ước tính
           </h2>
-          <p className="text-slate-600 mb-6 text-sm">
+          <p className="text-xs text-slate-500 mb-6 leading-relaxed">
             Tổng doanh thu tiềm năng đạt <strong>~1.16 Tỷ VNĐ</strong> dựa trên quy đổi lượng traffic 0.5% từ 50 quán cafe.
           </p>
-          <div className="h-64 border border-slate-100 rounded-xl p-4 bg-slate-50 relative flex items-center">
+          <div className="h-64 mt-auto">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={revenueData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
+                  innerRadius={50}
                   outerRadius={80}
                   paddingAngle={5}
                   dataKey="value"
@@ -78,57 +77,83 @@ export default function FinancialPlan() {
                 </Pie>
                 <RechartsTooltip cursor={false} 
                   formatter={(value: any) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value)}
-                  contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
+                  contentStyle={{borderRadius: '12px', border: '1px solid #f1f5f9', boxShadow: 'none', fontSize: '11px'}}
                 />
-                <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{fontSize: '12px'}}/>
+                <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{fontSize: '11px', color: '#64748b'}}/>
               </PieChart>
             </ResponsiveContainer>
           </div>
         </div>
       </div>
 
-      <div className="bg-slate-900 text-white rounded-2xl p-10 mb-16 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500 rounded-full blur-3xl opacity-10"></div>
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <div className="bg-slate-900 text-white rounded-2xl p-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           
-          <div className="col-span-1">
-            <h3 className="text-xl font-bold mb-4 text-yellow-400 flex items-center gap-2"><Calculator className="w-5 h-5"/> CAPEX (Đầu tư setup)</h3>
-            <div className="space-y-4 text-sm text-slate-300">
-              <div className="flex justify-between border-b border-slate-800 pb-2">
-                <span>100 Sản phẩm Đèn (1.5M/cái)</span>
-                <span className="font-mono">150.00M</span>
+          <div className="col-span-1 border-b md:border-b-0 md:border-r border-slate-800 pb-6 md:pb-0 md:pr-6">
+            <h3 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 mb-6 text-yellow-400">
+              <Calculator className="w-3.5 h-3.5"/> CAPEX (Đầu tư setup)
+            </h3>
+            <div className="space-y-4 text-xs">
+              <div className="flex justify-between text-slate-400">
+                <span>100 Sản phẩm Đèn</span>
+                <span className="font-mono text-white">150.00M</span>
               </div>
-              <div className="flex justify-between border-b border-slate-800 pb-2">
-                <span>100 Standee Mica (25K/cái)</span>
-                <span className="font-mono">2.50M</span>
+              <div className="flex justify-between text-slate-400">
+                <span>100 Standee Mica</span>
+                <span className="font-mono text-white">2.50M</span>
               </div>
-              <div className="flex justify-between border-b border-slate-800 pb-2">
-                <span>Tracking App (Năm đầu)</span>
-                <span className="font-mono">30.00M</span>
+              <div className="flex justify-between text-slate-400">
+                <span>Tracking App (1 năm)</span>
+                <span className="font-mono text-white">30.00M</span>
               </div>
-              <div className="flex justify-between pt-2">
-                <span className="font-bold text-white">Tổng CAPEX (Dự kiến)</span>
+              <div className="flex justify-between pt-4 border-t border-slate-800">
+                <span className="font-bold uppercase tracking-widest text-slate-300">Tổng</span>
                 <span className="font-mono font-bold text-yellow-400">~182.50M</span>
               </div>
             </div>
-            <p className="mt-4 text-[11px] text-slate-400 leading-tight">Chỉ bằng NSQC 1-2 tháng, thiết lập được 50 "điểm chạm vật lý" đẳng cấp.</p>
+            <p className="mt-6 text-[10px] text-slate-500 leading-relaxed font-medium uppercase tracking-widest">
+              = NSQC 1 tháng cho 50 điểm vật lý.
+            </p>
           </div>
 
-          <div className="col-span-2">
-            <h3 className="text-xl font-bold mb-4 text-yellow-400">Giả định Lợi nhuận & Chi phí Vận Hành</h3>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="bg-slate-800/50 p-5 rounded-xl border border-slate-700/50">
-                <h4 className="text-xs uppercase tracking-wider text-slate-400 mb-2">Metrics Traffic</h4>
-                <p className="text-sm font-semibold mb-1">7.5K khách/ngày <span className="font-normal text-slate-400 text-xs">(Tổng 50 quán)</span></p>
-                <p className="text-sm font-semibold mb-1">0.5% Scan Rate <span className="font-normal text-slate-400 text-xs">(1,125 visits/mth)</span></p>
-                <p className="text-sm font-semibold mb-1">3% Conv. Rate <span className="font-normal text-slate-400 text-xs">(~33 orders/mth)</span></p>
-                <p className="text-sm font-semibold">2.5M VND <span className="font-normal text-slate-400 text-xs">(AOV)</span></p>
+          <div className="col-span-1 md:col-span-2">
+            <h3 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 mb-6 text-yellow-400">
+              Biến phí & Lợi nhuận
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex flex-col gap-3">
+                <h4 className="text-[10px] uppercase tracking-widest text-slate-500 font-bold border-b border-slate-800 pb-2">Metrics Traffic</h4>
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-400">Khách/ngày (50 quán)</span>
+                  <span className="font-bold text-white">7.5K</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-400">Scan Rate (0.5%)</span>
+                  <span className="font-bold text-white">1,125</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-400">Conv. Rate (3%)</span>
+                  <span className="font-bold text-white">33 đơn</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-400">AOV</span>
+                  <span className="font-bold text-white">2.5M VND</span>
+                </div>
               </div>
-              <div className="bg-slate-800/50 p-5 rounded-xl border border-slate-700/50">
-                <h4 className="text-xs uppercase tracking-wider text-slate-400 mb-2">Biến phí (Variable Cost)</h4>
-                <p className="text-sm font-semibold mb-1">198M VND <span className="font-normal text-slate-400 text-xs">(Hoa hồng 20%/năm)</span></p>
-                <p className="text-sm font-semibold mb-1">10% Khấu trừ tại nguồn <span className="font-normal text-slate-400 text-xs">(Thuế TNCN F&B)</span></p>
-                <p className="text-sm font-semibold mb-1">22.5M VND <span className="font-normal text-slate-400 text-xs">(Hao mòn vật lý 15%)</span></p>
+              <div className="flex flex-col gap-3">
+                <h4 className="text-[10px] uppercase tracking-widest text-slate-500 font-bold border-b border-slate-800 pb-2">Biến phí (Variable Cost)</h4>
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-400">Hoa hồng (20%)</span>
+                  <span className="font-bold text-white">198M</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-400">Thuế (F&B)</span>
+                  <span className="font-bold text-white">10%</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-400">Hao mòn (15%)</span>
+                  <span className="font-bold text-white">22.5M</span>
+                </div>
               </div>
             </div>
           </div>
@@ -136,18 +161,18 @@ export default function FinancialPlan() {
         </div>
       </div>
 
-      <div className="mt-20 flex justify-between">
+      <div className="flex justify-between items-center">
         <Link 
           href="/business-model" 
-          className="inline-flex items-center gap-2 text-slate-500 px-6 py-3 rounded-md font-medium hover:text-slate-900 transition-colors"
+          className="text-xs text-slate-400 hover:text-slate-800 transition-colors uppercase font-bold tracking-widest"
         >
-          Trở về
+          ← Business Model
         </Link>
         <Link 
           href="/execution-plan" 
-          className="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-md font-medium hover:bg-slate-800 transition-colors"
+          className="inline-flex items-center gap-2 bg-yellow-400 text-slate-900 px-5 py-2.5 text-xs font-bold rounded-lg hover:bg-yellow-500 transition-colors uppercase tracking-tight"
         >
-          Tiếp tục: Execution Plan <ArrowRight className="w-4 h-4" />
+          Tiếp tục: Execution Plan <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>
     </div>
