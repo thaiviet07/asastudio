@@ -6,14 +6,33 @@ export default function Home() {
     <div className="max-w-5xl mx-auto">
       <div className="mb-8">
         <div className="text-xs text-yellow-400 font-bold uppercase tracking-widest mb-2">Executive Summary</div>
-        <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
+        <h1 className="text-3xl font-semibold tracking-tight text-slate-900 mb-2">
           Chiến lược O2O Bán lẻ Đèn Thiết kế ASA Studio
         </h1>
-        <p className="text-sm text-slate-500 mt-2 max-w-3xl leading-relaxed">
+        <p className="text-sm text-slate-500 max-w-3xl leading-relaxed">
           Đánh giá toàn diện mô hình trưng bày trải nghiệm và hệ thống tiếp thị 
           liên kết qua kênh không gian F&B nhằm hiện thực hóa mục tiêu kép: 
           thúc đẩy doanh thu và thiết lập nhận diện thương hiệu bền vững.
         </p>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-slate-50 border border-slate-100 rounded-xl p-4">
+           <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Mục tiêu Đối tác F&B</div>
+           <div className="text-2xl font-bold font-mono tracking-tight text-slate-900">50+</div>
+        </div>
+        <div className="bg-slate-50 border border-slate-100 rounded-xl p-4">
+           <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Mức Affiliate</div>
+           <div className="text-2xl font-bold font-mono tracking-tight text-slate-900">15-20%</div>
+        </div>
+        <div className="bg-slate-50 border border-slate-100 rounded-xl p-4">
+           <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Cookie Lifetime</div>
+           <div className="text-2xl font-bold font-mono tracking-tight text-slate-900">60 Days</div>
+        </div>
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+           <div className="text-[10px] font-bold text-yellow-400 uppercase tracking-widest mb-1">Est. Yearly Rev</div>
+           <div className="text-2xl font-bold font-mono tracking-tight text-white">~1.16B</div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">

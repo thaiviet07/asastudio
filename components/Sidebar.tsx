@@ -9,6 +9,7 @@ import {
   Briefcase, 
   LineChart, 
   Calendar,
+  ShieldAlert
 } from 'lucide-react';
 
 const navItems = [
@@ -17,6 +18,7 @@ const navItems = [
   { name: 'Business Proposal', href: '/business-model', icon: Briefcase },
   { name: 'Financial Forecast', href: '/financial-plan', icon: LineChart },
   { name: 'Execution Master Plan', href: '/execution-plan', icon: Calendar },
+  { name: 'Case Studies & Risk', href: '/case-studies', icon: ShieldAlert },
 ];
 
 export function Sidebar() {

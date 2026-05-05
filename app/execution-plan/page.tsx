@@ -1,4 +1,4 @@
-import { CheckCircle2, Circle } from "lucide-react";
+import { CheckCircle2, Circle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export default function ExecutionPlan() {
@@ -146,6 +146,12 @@ export default function ExecutionPlan() {
           className="text-xs text-slate-400 hover:text-slate-800 transition-colors uppercase font-bold tracking-widest"
         >
           ← Financial Plan
+        </Link>
+        <Link 
+          href="/case-studies" 
+          className="inline-flex items-center gap-2 bg-yellow-400 text-slate-900 px-5 py-2.5 text-xs font-bold rounded-lg hover:bg-yellow-500 transition-colors uppercase tracking-tight"
+        >
+          Tiếp tục: Case Studies <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>
     </div>
